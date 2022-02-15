@@ -1,4 +1,6 @@
 #include<iostream>
+#include<windows.h>
+#include<conio.h>
 #define MAX 100
 
 using namespace std;
@@ -18,6 +20,16 @@ struct Board
         Col = col;
     }
 };
+
+void GoTo(int posX, int posY)
+{
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD Position;
+    Position.X = posX;
+    Position.Y = posY;
+
+	SetConsoleCursorPosition(hStdout, Position);
+}
 
 void PrintHorizonLine(int size)
 {
@@ -51,7 +63,7 @@ void print_Board(Board b, Player p, int row, int col)
         for(int j = 0; j < b.Col; j ++)
         {
             cout << "    ";
-            cout << p.Icon[i][j];
+            cout << " "; // tọa độ (5,4) với ô đầu tiên, ô kế đó có tọa độ (16,4)
             std::cout << "     |";
         }
         cout << endl;
@@ -60,10 +72,31 @@ void print_Board(Board b, Player p, int row, int col)
     }
 }
 
+void play(Player p, Board b, int row, int col)
+{
+        char c;
+        int p_x = 5, p_y = 2;
+        while (c != 13)
+        {
+            c = _getch();
+            switch (c)
+            {
+                case 'd':p_x += 11; break;
+                default: break;
+            }
+        }
+        system("cls");
+         print_Board(b, p, 3, 3);
+         GoTo(p_x, p_y);
+         cout << "x";
+}
+
 int main()
 {
     Player p;
     Board b;
-    print_Board(b, p, 6, 4);
+    print_Board(b, p, 3, 3);
+    play(p, b, 3, 3);
+    GoTo(15, 15);
     return 0;
 }
