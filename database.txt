@@ -1,8 +1,2 @@
-1
-0
-Duyquan13;Duyquan0209
-3 3
-x x o 
-o x x 
-o x o 
+
 

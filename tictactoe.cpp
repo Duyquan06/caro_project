@@ -63,15 +63,45 @@ void GoTo(int posX, int posY)
 	SetConsoleCursorPosition(hStdout, Position);
 }
 
-struct menu
+struct Menu
 {
-    void sign_in(Player p[], int &qty)
+    void sign_up(Player p[], int &qty)
     {
+        cin.ignore();
         cin.getline(p[qty].Login, MAX);
         cin.getline(p[qty++].Pass, MAX);
     }
 
-    bool sign_up(Player p[], Board b[], int &qty, int &index, ifstream &dtb)
+    void Read_database(ifstream &dtb, Player p[], Board b[], int &qty, int &index)
+    {
+        int temp_check;
+        dtb.open("database.txt");
+        dtb >> qty;
+        for(int i = 0; i < qty;i++)
+        {
+            dtb >> temp_check;
+              dtb.getline(p[i].Login, MAX, ';');
+              dtb.getline(p[i].Pass, MAX, ';');
+              int row, col;
+              dtb >> row >> col;
+              b[i].initialize(row, col);
+              for(int j = 0; j < b[i].Row; j++)
+              {
+                  for(int q = 0; q <  b[i].Col; q++)
+                  {
+                       char temp_Icon;
+                        dtb >> temp_Icon;
+                        if(temp_Icon == '0')
+                            temp_Icon = ' ';
+                        p[i].Icon[j][q] = temp_Icon;
+                  }
+
+              }
+
+        }
+        dtb.close();
+    }
+    bool sign_in(Player p[], Board b[], int &qty, int &index, ifstream &dtb, int &turn)
     {   
         char temp_login[MAX], temp_pass[MAX], check_login[MAX], check_pass[MAX];
         cin.getline(temp_login, MAX);
@@ -80,36 +110,33 @@ struct menu
         dtb >> qty;
         for(int i = 0; i < qty; i++)
         {
-            dtb >> index;
+            int temp_index;
+            dtb >> temp_index;
             dtb.ignore();
             dtb.getline(check_login, MAX, ';');
             dtb.getline(check_pass, MAX);
             if(!(strcmp(temp_login, check_login)) && !(strcmp(temp_pass, check_pass)))
             {
-                int row, col;
-                dtb >> row >> col;
-                b[index].initialize(row, col);
+                temp_index = index;
+                int temp_row, temp_col;
+                dtb >> temp_row >> temp_col >> turn;
                 for(int j = 0; j < b[index].Row; j++)
                 {
                     for(int q = 0; q < b[index].Col; q++)
                     {
                         char temp_Icon;
                         dtb >> temp_Icon;
-                        if(temp_Icon == '0')
-                            temp_Icon = ' ';
-                        p[index].Icon[i][j] = temp_Icon;
                     }
                 }
                 dtb.close();
                 return true;
-            } else {
-                dtb.close();
-                return false;
             }
         }
+        dtb.close();
+        return false;
 
     }
-    void Back_up(Player p[], Board b[], int &qty, ofstream &dtb)
+    void Back_up(Player p[], Board b[], int &qty, ofstream &dtb, int &turn)
     {
         dtb.open("database.txt");
         dtb << qty << endl;
@@ -117,7 +144,7 @@ struct menu
         {
             dtb << i << endl;
             dtb << p[i].Login << ";" << p[i].Pass << endl;
-            dtb << b[i].Row << " " << b[i].Col << endl;
+            dtb << b[i].Row << " " << b[i].Col << turn << endl;
             for(int j = 0; j < b[i].Row; j++)
             {
                 for(int q = 0; q < b[i].Col; q++)
@@ -134,59 +161,155 @@ struct menu
     }
 };
 
-void print_Board(Board b, Player p, int row, int col)
+void print_Board(Board b[], Player p[], int row, int col, int &index) // paly by new account
 {
-    b.initialize(row, col);
-    p.init(b);
-    b.PrintHorizonLine();
-    for(int i = 0; i < b.Row; i++)
+    b[index].PrintHorizonLine();
+    for(int i = 0; i < b[index].Row; i++)
     {
-       b.PrintVerticalLine();
+       b[index].PrintVerticalLine();
         cout << "|";
-        for(int j = 0; j < b.Col; j ++)
+        for(int j = 0; j < b[index].Col; j ++)
         {
             cout << "    ";
-            cout << p.Icon[i][j]; // tọa độ (5,4) với ô đầu tiên, ô kế đó có tọa độ (16,4)
+            cout << p[index].Icon[i][j]; // tọa độ (5,4) với ô đầu tiên, ô kế đó có tọa độ (16,4)
             std::cout << "     |";
         }
         cout << endl;
-        b.PrintVerticalLine();
-        b.PrintHorizonLine();
+        b[index].PrintVerticalLine();
+        b[index].PrintHorizonLine();
     }
 }
 
-void play(Player p, Board b, int row, int col)
+bool is_emp(Player p[], Board b[], int &index, int i, int j)
 {
-        char c;
-        int p_x = 5, p_y = 2;
-        while (c != 13)
+   
+        if(p[index].Icon[i][j] != ' ')
+             return false;
+    return true;
+}
+
+bool is_win(Player p[], int &index, int i, int j, int &turn)
+{
+    return false;
+}
+
+void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int &p_y, int oriX, int oriY, int &i, int &j, int &turn, char c) // play by new account
+{
+
+         c = '0';
+        while (c != 13 && c != 27)
         {
             c = _getch();
             switch (c)
             {
-                case 'w':p_y -= 4;  break;
-                case 'a':p_x -= 11; break;
-                case 'd':p_x += 11; break;
-                case 's':p_y += 4;break;
+                case 'w':
+                    if(p_y > oriY)
+                    {  
+                        p_y -= 4; 
+                        i--;
+                    }
+                    break;
+                case 'a':
+                    if(p_x > oriX)
+                    {  
+                        p_x -= 11; 
+                        j--;
+                    }
+                    break;
+                case 'd':
+                    if(p_x < (col-1)*11)
+                    {  
+                        p_x += 11; 
+                        j++;
+                    }
+                     break;
+                case 's':
+                    if(p_y < (row-1)*4)
+                    {  
+                        p_y += 4; 
+                        i++;
+                    }
+                     break;
                 default: break;
             }
         }
-        system("cls");
-         print_Board(b, p, 3, 3);
-         GoTo(p_x, p_y);
-         cout << "x";
+        
+        if(is_emp(p, b, index, i, j))
+        {
+            system("cls");
+            print_Board(b, p, row, col, index);
+            if (turn == 2)
+                turn -= 2;
+            if(turn == 0)
+            {
+                p[index].Icon[i][j] = 'x';
+                turn ++;
+            }
+            else if(turn == 1)
+            {
+                 p[index].Icon[i][j] = 'o';
+                 turn++;
+            }
+            GoTo(p_x, p_y);
+            cout << p[index].Icon[i][j];
+        }
+}
+
+void game_play(Player p[], Board b[], int &row, int &col, int &qty, int &index, int &p_x, int &p_y, int i, int j, int &turn, char c, ifstream &dtb, ofstream &out)
+{
+    Menu menu;
+    menu.Read_database(dtb, p, b, qty, index);
+    int choice;
+     Start:
+    cin >> choice;
+ 
+    if(choice == 1)
+    {
+            menu.sign_up(p, qty);
+            cin >> row >> col;
+            int oriX, oriY;
+             i = 0, j = 0, p_x = 5, p_y = 2, turn = 0, c = '0', index = qty -1, oriX = p_x, oriY = p_y;
+            b[qty-1].initialize(row, col);
+            p[qty-1].init(b[qty-1]);
+            print_Board(b, p, row, col, index);
+            while(!(is_win(p, index, i, j, turn)) || c != 27)
+            {
+                process(p, b, row, col, index, p_x, p_y, oriX, oriY, i, j, turn, c);
+            }
+            cout << "the winner is player " << turn << endl;
+      
+    } else if(choice == 2) {
+            int oriX, oriY;
+            i = 0, j = 0, p_x = 5, p_y = 4, c = '0', oriX = p_x, oriY = p_y;;
+            if(menu.sign_in(p, b, qty, index, dtb, turn))
+            {
+                print_Board(b, p, row, col, index);
+                while(!(is_win(p, index, i, j, turn)) || c != 27)
+                {
+                    process(p, b, b[index].Row, b[index].Col, index, p_x, p_y, oriX, oriY, i, j, turn, c);
+                }
+                cout << "The winner is player " << turn << endl;
+            
+            } else {
+                cout << "Account not exit";
+                goto Start;
+            }
+    }   
+     menu.Back_up(p, b, qty, out, turn);
 }
 
 int main()
 {
     Player p[MAX];
     Board b[MAX];
-    int qty = 0, index;
+    int qty = 0, index, i, j, p_x, p_y, turn, row, col;
+    char c;
     //print_Board(b, p, 3, 3);
     //play(p, b, 3, 3);
-    ofstream dtb;
-    ifstream d;
-    menu m;
+    ofstream out;
+    ifstream dtb;
+    Menu menu;
+    game_play(p, b, row, col, qty, index, p_x, p_y, i, j, turn, c, dtb, out);
     //m.sign_in(p, qty);
    // b[0].initialize(3,3);
    // for(int i = 0; i < 3; i++)
