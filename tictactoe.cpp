@@ -67,9 +67,24 @@ struct Menu
 {
     void sign_up(Player p[], int &qty)
     {
+        qty++;
         cin.ignore();
-        cin.getline(p[qty].Login, MAX);
-        cin.getline(p[qty++].Pass, MAX);
+        cin.getline(p[qty-1].Login, MAX);
+        //cin.getline(p[qty++].Pass, MAX);
+        char c; int i =0;
+        while (c != 13)
+    {
+        c = _getch();
+        if(c != 13)
+        {
+              cout << "*";
+              p[qty-1].Pass[i] = c;
+        }
+        i++;
+    }
+        p[qty-1].Pass[i] = '\0';
+        cout << endl;
+
     }
 
     void Read_database(ifstream &dtb, Player p[], Board b[], int &qty, int &index)
@@ -81,9 +96,9 @@ struct Menu
         {
             dtb >> temp_check;
               dtb.getline(p[i].Login, MAX, ';');
-              dtb.getline(p[i].Pass, MAX, ';');
+              dtb.getline(p[i].Pass, MAX);
               int row, col;
-              dtb >> row >> col;
+              dtb >> row >> col >> index;
               b[i].initialize(row, col);
               for(int j = 0; j < b[i].Row; j++)
               {
@@ -103,34 +118,51 @@ struct Menu
     }
     bool sign_in(Player p[], Board b[], int &qty, int &index, ifstream &dtb, int &turn)
     {   
-        char temp_login[MAX], temp_pass[MAX], check_login[MAX], check_pass[MAX];
+        char temp_login[MAX], temp_pass[MAX];
+        cin.ignore();
         cin.getline(temp_login, MAX);
-        cin.getline(temp_pass, MAX);
+        //cin.getline(temp_pass, MAX);
+        char c; int r =0;
+        while (c != 13)
+    {
+        c = _getch();
+        if(c != 13)
+        {
+              cout << "*";
+              temp_pass[r] = c;
+              r++;
+        }
+    }
+        temp_pass[r] = '\0';
+        cout << endl << temp_pass;
+        cout << endl;
         dtb.open("database.txt");
         dtb >> qty;
         for(int i = 0; i < qty; i++)
         {
+            char check_login[MAX] = {' '}, check_pass[MAX] = {' '};
             int temp_index;
             dtb >> temp_index;
             dtb.ignore();
             dtb.getline(check_login, MAX, ';');
             dtb.getline(check_pass, MAX);
+            int temp_row, temp_col, temp_turn;
             if(!(strcmp(temp_login, check_login)) && !(strcmp(temp_pass, check_pass)))
             {
-                temp_index = index;
-                int temp_row, temp_col;
+                index = temp_index;
                 dtb >> temp_row >> temp_col >> turn;
-                for(int j = 0; j < b[index].Row; j++)
+                dtb.close();
+                return true;
+            }
+                dtb >> temp_row >> temp_col >> temp_turn;
+                for(int j = 0; j < b[temp_index].Row; j++)
                 {
-                    for(int q = 0; q < b[index].Col; q++)
+                    for(int q = 0; q < b[temp_index].Col; q++)
                     {
                         char temp_Icon;
                         dtb >> temp_Icon;
                     }
                 }
-                dtb.close();
-                return true;
-            }
         }
         dtb.close();
         return false;
@@ -144,7 +176,7 @@ struct Menu
         {
             dtb << i << endl;
             dtb << p[i].Login << ";" << p[i].Pass << endl;
-            dtb << b[i].Row << " " << b[i].Col << turn << endl;
+            dtb << b[i].Row << " "<< b[i].Col << " "<< turn << endl;
             for(int j = 0; j < b[i].Row; j++)
             {
                 for(int q = 0; q < b[i].Col; q++)
@@ -280,7 +312,7 @@ void game_play(Player p[], Board b[], int &row, int &col, int &qty, int &index, 
       
     } else if(choice == 2) {
             int oriX, oriY;
-            i = 0, j = 0, p_x = 5, p_y = 4, c = '0', oriX = p_x, oriY = p_y;;
+            i = 0, j = 0, p_x = 5, p_y = 2, c = '0', oriX = p_x, oriY = p_y;;
             if(menu.sign_in(p, b, qty, index, dtb, turn))
             {
                 print_Board(b, p, row, col, index);
