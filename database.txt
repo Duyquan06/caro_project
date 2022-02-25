@@ -1,14 +1,19 @@
-2
+3
 0
-Duyquan_06;Duyquan0308
-3 3 0
-x x 0 
-o o 0 
-x o 0 
+Duyquan0308;1
+3 3 1
+x 0 0 
+o x 0 
+0 o x 
 1
-Duyquan123;12
-4 4 1
-x o x o
-0 o x 0
-x x o 0
-x 0 x o
+Duyquan123;123
+3 3 1
+x 0 0 
+o x 0 
+0 o x 
+2
+Dquan_06;123456
+3 3 1
+x 0 0 
+o x 0 
+0 o x 
