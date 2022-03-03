@@ -43,6 +43,8 @@ struct Player
 {
     char Login[MAX], Pass[MAX];
     char Icon[MAX][MAX];
+    int turn;
+    int undo_1, undo_2;
     void init(Board b)
     {
         for(int i = 0; i < b.Row; i++)
@@ -50,8 +52,8 @@ struct Player
             for(int j = 0; j < b.Col; j++)
                 Icon[i][j] = ' ';
         }
+        undo_1 = 0; undo_2 = 0;
     }
-    int turn;
 };
 
 void GoTo(int posX, int posY)
@@ -281,7 +283,7 @@ bool is_win(Player p[], Board b[], int &index, int i, int j, int &turn)
 
 void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int &p_y, int oriX, int oriY, int &i, int &j, int &turn, char c) // play by new account
 {
-
+        int r1 = 0, r2 = 0;
          c = '0';
         while (c != 13 && c != 27)
         {
@@ -314,6 +316,32 @@ void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int 
                     {  
                         p_y += 4; 
                         i++;
+                    }
+                    break;
+                case 'r':
+                    p[index].turn -= 1;
+                    if(p[index].turn == 0)
+                    {
+                        if(p[index].undo_1 == 0)
+                        {
+                            p[index].Icon[i][j] = ' ';
+                            GoTo(p_x, p_y);
+                            cout << p[index].Icon[i][j];
+                            p[index].undo_1 ++;
+                        } else {
+                            cout << p[index].turn << " can not go again \n";
+                        }
+                    } else if(p[index].turn  == 1)
+                    {
+                        if(p[index].undo_2 == 0)
+                        {
+                            p[index].Icon[i][j] = ' ';
+                            GoTo(p_x, p_y);
+                            cout << p[index].Icon[i][j];
+                            p[index].undo_2 ++;
+                        } else {
+                            cout << p[index].turn << " can not go again \n";
+                        }
                     }
                      break;
                 default: break;
