@@ -54,6 +54,8 @@ struct Player
         }
         undo_1 = 0; undo_2 = 0;
     }
+    int win1 = 0, win2 = 0, draw = 0;
+    char Icon1, Icon2;
 };
 
 void GoTo(int posX, int posY)
@@ -190,7 +192,7 @@ struct Menu
               dtb.getline(p[i].Login, MAX, ';');
               dtb.getline(p[i].Pass, MAX);
               int row, col;
-              dtb >> row >> col >> p[i].turn;
+              dtb >> row >> col >> p[i].turn >> p[i].Icon1 >> p[i].Icon2 >>p[i].win1 >> p[i].win2 >> p[i].draw;
               b[i].initialize(row, col);
               for(int j = 0; j < b[i].Row; j++)
               {
@@ -265,7 +267,7 @@ struct Menu
              dtb << i << endl;
              Remove_Newline(p[i].Login);
              dtb << p[i].Login << ";" << p[i].Pass << endl;
-             dtb << b[i].Row << " " << b[i].Col << " " << p[i].turn << endl;
+             dtb << b[i].Row << " " << b[i].Col << " " << p[i].turn << " " << p[i].Icon1 << " "  << p[i].Icon2 <<  " "<< p[i].win1 << " " << p[i].win2 << " " << p[i].draw << endl;
              for(int j = 0; j < b[i].Row; j++)
              {
                  for(int q = 0; q < b[i].Col; q++)
@@ -310,10 +312,10 @@ void print_Board(Board b[], Player p[], int row, int col, int &index, int curren
                 std::cout <<"|";
             } else {
                 cout << "    ";
-               if(p[index].Icon[i][j] == 'x')
+               if(p[index].Icon[i][j] == p[index].Icon1)
                 {
                     SetColor(0, 4) ;    // tọa độ (5,4) với ô đầu tiên, ô kế đó có tọa độ (16,4)
-                } else if(p[index].Icon[i][j] == 'o')
+                } else if(p[index].Icon[i][j] == p[index].Icon2)
                 {
                     SetColor(0,6);
                 }
@@ -446,15 +448,17 @@ void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int 
                      break;
                 default: break;
             }
-                    XoaManHinh();
-                    unhide_Pointer();
+                   XoaManHinh();
+                   unhide_Pointer();
                     print_Board(b, p, b[index].Row, b[index].Col, index, i, j);
                         if(check_undo == false)
                         {
                              cout << "\n Player " << p[index].turn + 1 << " can not go again\n";
+                             cout << "\n  this is player " << p[index].turn +1<< " turn \n";
                              check_undo = true;
+                        } else {
+                            cout << "\n  this is player " << p[index].turn +1<< " turn \n";
                         }
-                    cout << "\n  this is player " << p[index].turn +1<< " turn \n";
         }
         
         if(c != 27)
@@ -463,13 +467,13 @@ void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int 
             {
                 if(p[index].turn == 0)
                 {
-                    p[index].Icon[i][j] = 'x';
+                    p[index].Icon[i][j] = p[index].Icon1;
                     latest_x1 = i; latest_y1 = j;
                     p[index].turn++;
                 }
                 else if(p[index].turn== 1)
                 {
-                    p[index].Icon[i][j] = 'o';
+                    p[index].Icon[i][j] = p[index].Icon2;
                     latest_x2 = i; latest_y2 = j;
                     p[index].turn++;
                 }
@@ -557,28 +561,17 @@ bool Account(Player p[], Board b[], Menu &menu, int &qty, int &index, int row, i
             qty--;
         }
         XoaManHinh();
-            cout <<"sign up successfully            \n";
-            cout << "Enter your row and col for your board: ";
-            cin >> row >> col;
-            index = qty-1;
-            b[index].initialize(row, col);
-             p[index].init(b[index]);
-             p[index].turn = 0;
-             return true;
+        b[index].Row == 0;
+        b[index].Col == 0;
+        index = qty-1;
+        return true;
     }  else if(choice == 2) {
 
         while(!(menu.sign_in(p, b, qty, index, dtb)))
              {
                  cout << "Your account does not exist \n";
              }
-             system("cls");
-             if(b[index].Row == 0 && b[index].Col == 0)
-                    {
-                        cout << "Enter your row and col for your board: ";
-                        cin >> b[index].Row >> b[index].Col;
-                        p[index].init(b[index]);
-                    }
-                XoaManHinh();
+             XoaManHinh();
              return true;
     }
 }
@@ -716,6 +709,92 @@ void Animation_3(char f[], char s[], char t[], int &choose)
 
 }
 
+
+void Animation_2(char f[], char s[], int &choice, Player p[], int index, int check)
+{
+    char c = '0';
+    if(check == 2)
+        cout << "\t\t\t\t   Draw game\n";
+    else 
+        cout << "\t\t\t\t   The winner is player " << p[index].turn <<"!!!!!!!\n";
+     cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
+            SetColor(0, 9);
+        cout << "                               -------------------------------------\n";
+        cout << "                               |                                    |\n";
+        cout << "                               |             ";
+        cout << f;
+        cout << "             |\n";
+        cout << "                               |                                    |\n";
+        cout << "                               -------------------------------------\n\n";
+             SetColor(0, 7);
+        cout << "                               -------------------------------------\n";
+        cout << "                               |                                    |\n";
+        cout << "                               |               ";
+        cout << s;
+        cout << "                 |\n";
+        cout << "                               |                                    |\n";
+        cout << "                               -------------------------------------\n\n";
+    while(c != 13)
+    {
+        c = _getch();
+        switch(c)
+        {
+            case 's':
+             if(choice == 0)
+                choice++;
+            break;
+
+            case 'w':
+                if(choice == 1)
+                    choice--;
+            break;
+        }
+        system("cls");
+        if(check == 2)
+         cout << "\t\t\t\t   Draw game\n";
+             else 
+        cout << "\t\t\t\t   The winner is player " << p[index].turn <<"!!!!!!!\n";
+        cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
+        if(choice == 0)
+        {
+            SetColor(0, 9);
+        cout << "                               -------------------------------------\n";
+        cout << "                               |                                    |\n";
+        cout << "                               |             ";
+        cout << f;
+        cout << "             |\n";
+        cout << "                               |                                    |\n";
+        cout << "                               -------------------------------------\n\n";
+             SetColor(0, 7);
+        cout << "                               -------------------------------------\n";
+        cout << "                               |                                    |\n";
+        cout << "                               |               ";
+        cout << s;
+        cout << "                 |\n";
+        cout << "                               |                                    |\n";
+        cout << "                               -------------------------------------\n\n";
+        } else if(choice == 1)
+        {
+             SetColor(0, 7);
+        cout << "                               -------------------------------------\n";
+        cout << "                               |                                    |\n";
+        cout << "                               |             ";
+        cout << f;
+        cout << "             |\n";
+        cout << "                               |                                    |\n";
+        cout << "                               -------------------------------------\n\n";
+             SetColor(0, 9);
+       cout << "                               -------------------------------------\n";
+        cout << "                               |                                    |\n";
+        cout << "                               |               ";
+        cout << s;
+        cout << "                 |\n";
+        cout << "                               |                                    |\n";
+        cout << "                               -------------------------------------\n\n";
+             SetColor(0, 7);
+        }
+    }
+}
 void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, int &index, int &p_x, int &p_y, int i, int j, int &turn, char c, ifstream &dtb, ofstream &out)
 {
     menu.Read_database(dtb, p, b, qty, index);
@@ -726,9 +805,21 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
         do
         {
             system("cls");
+            if(b[index].Row == 0 && b[index].Col == 0)
+            {
+                cout << "Enter your row and col for your board: ";
+                cin >> b[index].Row >> b[index].Col;
+                cout << "Design icon of player 1: ";
+                cin >> p[index].Icon1;
+                cout << "Design icon of player 2: ";
+                cin >> p[index].Icon2;
+                p[index].init(b[index]);
+            }
+
             int check = 0, lates_x1 = 0, lates_y1 = 0, lates_x2 = 0, lates_y2;
             i = 0, j = 0, p_x = 5, p_y = 2,  c = '0';  int oriX = p_x, oriY = p_y;
             char f[] = "Continue", s[] = "Exit and save the game", t[] = "Exit and not save the game";
+            XoaManHinh();
             print_Board(b, p, b[index].Row, b[index].Col, index, 0, 0);
              cout << "\n  this is player " << p[index].turn + 1<< " turn \n";
              check = is_win(p, b, index, i, j, turn);
@@ -738,11 +829,6 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                     check = is_win(p, b, index, i, j, turn);
                     if(c == 27)
                     {
-                        /*
-                        GoTo(1, 5 * b[index].Row);
-                        cout << "save the game or continue.Enter 1 to exit and save game, 0 to continue, 2 to exit and not save: ";
-                        cin >>choose;
-                        */
                         system("cls");
                         Animation_3(f, s, t, choose);
                         if(choose == 0)
@@ -767,28 +853,28 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                          }
                     }
                 }
-                if(check == 1 && c != 27)
+                if(check == 1)
                 {
                    system("cls");
                    if(p[index].turn == 0)
                     {
-                        p[index].turn++;
-                         cout << "\n\nThe winner is player " << p[index].turn+1 << "!!!!!!!" << endl;
+                        p[index].turn+=2;
+                        p[index].win2 += 1;
                     } else {
-                         cout << "\n\nThe winner is player " << p[index].turn <<"!!!!!!!" << endl;
+                         p[index].win1 += 1;
                     }
                 }
                 if(check == 2)
                 {
                     system("cls");
-                    cout << "Draw game \n";
+                    p[index].draw += 1;
                 }
+                if(c != 27)
+                {
                     strcpy(f, "Play Again");
-                    strcpy(s, "Exit and save the game");
-                    strcpy(t, "Exit and not save the game");
-                   choose = 0;
-                   XoaManHinh();
-                   Animation_3(f, s, t,choose);
+                    strcpy(s, "Exit");
+                    choose = 0;
+                  Animation_2(f, s, choose, p, index, check);
                    if(choose == 0)
                         play_again = 1;
                     else 
@@ -796,34 +882,29 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                         play_again = 0;
                         if(choose == 1)
                             save_game = 1;
-                        else  
-                            save_game = 0;
                     }
+                }
             if(play_again == 1)
-               { p[index].init(b[index]);
+               { 
+                 p[index].init(b[index]);
                  p[index].turn = 0;
                  p[index].undo_1 = 0;
-                 p[index].undo_1 = 0;
+                 p[index].undo_2 = 0;
+                 b[index].Row = 0;
+                 b[index].Col = 0;
                }
         } while(play_again == 1);
         if(play_again == 0 && c != 27)
            {
-                    if(save_game == 1)
-                        menu.Back_up(p, b, qty);
-                    else 
-                    {
-                        p[index].init(b[index]);
-                        b[index].Row = 0;
-                        b[index].Col = 0;
-                        p[index].turn = 0;
-                        p[index].undo_1 = 0;
-                        p[index].undo_2 = 0;
-                         menu.Back_up(p, b, qty);
-                    }
-           } else if(play_again == 0 && c == 27)
-           {
+                p[index].init(b[index]);
+                b[index].Row = 0;
+                b[index].Col = 0;
+                p[index].turn = 0;
+                p[index].undo_1 = 0;
+                p[index].undo_2 = 0;
                 menu.Back_up(p, b, qty);
-           }
+           } else if(play_again == 0 && c == 27 && save_game == 1)
+                menu.Back_up(p, b, qty);
         }
 }
 int main()

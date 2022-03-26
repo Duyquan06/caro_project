@@ -1,46 +1,4 @@
-8
-0
-Duyquan0308;1
-0 0 0
 1
-Duyquan01;12
-4 4 0
-0 0 0 0 
-0 0 0 0 
-0 0 0 0 
-0 0 0 0 
-2
-Lavies;3003
-3 3 2
-x 0 0 
-o x 0 
-0 o 0 
-3
-Duyquan1;Nezuko
-4 4 1
-o x o x 
-x o x o
-x o x o 
-o x o x 
-4
-DoDuyQuan;Duyquan0308
-3 3 1
-x o x 
-o x o 
-0 0 x 
-5
-DuyQuan;12
-3 3 1
-x o x 
-o x o 
-x x o 
-6
+0
 Ekko;LOL
-0 0 0
-7
-ko;123
-4 4 0
-0 0 0 0 
-0 0 0 0 
-0 0 0 0 
-0 0 0 0 
+0 0 0 X Y 1 1 0
