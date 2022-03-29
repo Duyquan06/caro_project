@@ -83,11 +83,11 @@ void SetWindowSize(SHORT width, SHORT height)
     SetConsoleWindowInfo(hStdout, 1, &WindowSize);
 }
 
-void SetColor(int backgound_color, int text_color)
+void SetColor(int background_color, int text_color)
 {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    int color_code = backgound_color * 16 + text_color;
+    int color_code = background_color * 16 + text_color;
     SetConsoleTextAttribute(hStdout, color_code);
 }
 
@@ -398,7 +398,18 @@ int is_win(Player p[], Board b[], int &index, int i, int j, int &turn)
 
 }
 
-void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int &p_y, int oriX, int oriY, int &i, int &j, int &turn, char &c, int &latest_x1, int &latest_y1, int &latest_x2, int &latest_y2) // play by new account
+void MoveSuggestion(Player p[], Board b[], int index, int &hintR, int &hintC)
+{
+    srand((time(0)));
+   do
+   {
+       hintR = rand() % b[index].Row;;
+       hintC = rand() % b[index].Col;
+   } while (p[index].Icon[hintR][hintC] != ' ');    
+
+}
+
+void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int &p_y, int oriX, int oriY, int &i, int &j, int &turn, char &c, int &latest_x1, int &latest_y1, int &latest_x2, int &latest_y2, int &hintR, int &hintC) // play by new account
 {
          c = '0';
          bool check_undo = true;
@@ -461,7 +472,9 @@ void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int 
                              //cout << "\n  this is player " << p[index].turn +1<< " turn \n";
                              check_undo = true;
                         }
-                            cout << "\n  this is player " << p[index].turn +1<< " turn \n";
+
+                    cout << "\n  this is player " << p[index].turn +1<< " turn \n";
+                    cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
         }
         
         if(c != 27)
@@ -482,7 +495,8 @@ void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int 
                 }
                 if (p[index].turn == 2)
                     p[index].turn -= 2;
-                XoaManHinh();
+                //XoaManHinh();
+                system("cls");
                 unhide_Pointer();
                 print_Board(b, p, row, col, index, i, j);
                 cout << "\n  this is player " << p[index].turn +1<< " turn \n";
@@ -714,13 +728,14 @@ void Animation_3(char f[], char s[], char t[], int &choose)
 
 void Animation_2(char f[], char s[], int &choice, Player p[], int index, int check, int bot)
 {
+    system("cls");
     char c = '0';
     if(bot != 0)
     {
         if(check == 2)
         {
             cout << "\t\t\t\t   Draw game\n";
-            if(bot == 0)
+            if(bot == 1)
                 cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
             else 
                 cout << " \t\t  Human wins: " << p[index].human << "\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
@@ -732,11 +747,11 @@ void Animation_2(char f[], char s[], int &choice, Player p[], int index, int che
             cout << "\t\t\t\t   The winner is player " << p[index].turn <<"!!!!!!!\n";
             cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
             } else {
-                if(p[index].turn == 2)
+                if(p[index].turn == 0)
                     cout << "\t\t\t\t   The winner is bot " <<"!!!!!!!\n";
                 else 
                     cout << "\t\t\t\t   The winner is human " <<"!!!!!!!\n";
-                cout << " \t\t  Human wins: " << p[index].human << "\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
+                cout << " \t\t  Human wins: " << p[index].human << "\t\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
             }
         }
     }
@@ -856,6 +871,7 @@ void Bot(Player p[], Board b[], int index)
     p[index].turn--;
 }
 
+
 void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, int &index, int &p_x, int &p_y, int i, int j, int &turn, char c, ifstream &dtb, ofstream &out, int bot)
 {
     menu.Read_database(dtb, p, b, qty, index, bot);
@@ -874,9 +890,14 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                     Animation_2(f, s, bot, p, index, 0, 0);
                     bot++;
                 }
-                system("cls");
-                cout << "Enter your row and col for your board: ";
-                cin >> b[index].Row >> b[index].Col;
+                while(1)
+                {
+                    system("cls");
+                    cout << "Enter your row and col for your board (col and row MUST GREATER THAN 3): ";
+                    cin >> b[index].Row >> b[index].Col;
+                    if(b[index].Row >= 3 && b[index].Col >= 3)
+                        break;
+                }
                 cout << "Design icon of player 1: ";
                 cin >> p[index].Icon1;
                 cout << "Design icon of ";
@@ -888,23 +909,44 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                 p[index].init(b[index]);
             }
 
-            int check = 0, lates_x1 = 0, lates_y1 = 0, lates_x2 = 0, lates_y2;
+            int check = 0, lates_x1 = 0, lates_y1 = 0, lates_x2 = 0, lates_y2 = 0, hintR, hintC;
             i = 0, j = 0, p_x = 5, p_y = 2,  c = '0';  int oriX = p_x, oriY = p_y;
             char f[] = "Continue  ", s[] = "Exit and save the game", t[] = "Exit and not save the game";
-            XoaManHinh();
+
+            system("cls");
             print_Board(b, p, b[index].Row, b[index].Col, index, 0, 0);
              cout << "\n  this is player " << p[index].turn + 1<< " turn \n";
+
+            if(check == 0)
+            {
+             MoveSuggestion(p, b, index, hintR, hintC);
+             cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+            }
              check = is_win(p, b, index, i, j, turn);
             while(check == 0 && choose == 0)
                 {
-                    process(p, b, b[index].Row, b[index].Col, index, p_x, p_y, oriX, oriY, i, j, p[index].turn, c, lates_x1, lates_y1, lates_x2, lates_y2);
-                    if(bot == 2 && c != 27)
+                    process(p, b, b[index].Row, b[index].Col, index, p_x, p_y, oriX, oriY, i, j, p[index].turn, c, lates_x1, lates_y1, lates_x2, lates_y2, hintR, hintC);
+        
+                    check = is_win(p, b, index, i, j, turn);
+                    if(check == 0)
+                    {
+                        MoveSuggestion(p, b, index, hintR, hintC);
+                         cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+                    }
+
+                    if(bot == 2 && c != 27 && check == 0)
                     {
                         Bot(p, b, index);
-                        XoaManHinh();
+                       system("cls");
                         print_Board(b, p, b[index].Row, b[index].Col, index, i, j);
+                        
+                        check = is_win(p, b, index, i, j, turn);
+                        if(check == 0)
+                        {
+                            MoveSuggestion(p, b, index, hintR, hintC);
+                            cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+                        }
                     }
-                    check = is_win(p, b, index, i, j, turn);
                     if(c == 27)
                     {
                         system("cls");
@@ -915,6 +957,7 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                                 c = '0';
                                 print_Board(b, p, b[index].Row, b[index].Col, index, i, j);
                                 cout << "\n  this is player " << p[index].turn +1<< " turn \n";
+                                cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
                                
                             }
                         if(choose == 1)
@@ -935,7 +978,6 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                 }
                 if(check == 1)
                 {
-                   system("cls");
                    if(bot == 1)
                    {
                     if(p[index].turn == 0)
@@ -948,15 +990,14 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                    } else {
                        if(p[index].turn == 0)
                         {
-                            p[index].human += 1;
-                        } else {
                             p[index].bot += 1;
+                        } else {
+                            p[index].human += 1;
                         }
                    }
                 }
                 if(check == 2)
                 {
-                    system("cls");
                     if(bot == 1)
                         p[index].draw += 1;
                     else 
