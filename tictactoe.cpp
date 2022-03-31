@@ -5,6 +5,7 @@
 #include<conio.h>
 #include<cstdlib>
 #include<time.h>
+
 #define MAX 100
 
 using namespace std;
@@ -224,10 +225,7 @@ struct Menu
     cout << "                               |                                    |\n";
     cout << "                               -------------------------------------\n\n";
          GoTo(45, 4);
-        //cin.ignore();
         cin >> temp_login;
-        //cin.getline(temp_login, MAX);
-        //cin.getline(temp_pass, MAX);
     cout << "\n\n\n\n                                        Enter your password        \n";
     cout << "                               -------------------------------------\n";
     cout << "                               |                                    |\n";
@@ -291,6 +289,7 @@ struct Menu
 
 void print_Board(Board b[], Player p[], int row, int col, int &index, int current_i, int current_j) // paly by new account
 {
+    cout << " [r]: Move replay      [Esc]: pause game \n";
     b[index].PrintHorizonLine();
     for(int i = 0; i < b[index].Row; i++)
     {
@@ -469,7 +468,6 @@ void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int 
                         if(check_undo == false)
                         {
                              cout << "\n Player " << p[index].turn + 1 << " can not go again\n";
-                             //cout << "\n  this is player " << p[index].turn +1<< " turn \n";
                              check_undo = true;
                         }
 
@@ -738,7 +736,7 @@ void Animation_2(char f[], char s[], int &choice, Player p[], int index, int che
             if(bot == 1)
                 cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
             else 
-                cout << " \t\t  Human wins: " << p[index].human << "\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
+                cout << " \t\t  Human wins: " << p[index].human << "\t\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
         }
         else 
         {
@@ -796,7 +794,7 @@ void Animation_2(char f[], char s[], int &choice, Player p[], int index, int che
                 if(bot == 0)
                     cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
                 else 
-                    cout << " \t\t  Human wins: " << p[index].human << "\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
+                    cout << " \t\t  Human wins: " << p[index].human << "\t\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
             }
             else 
             {
@@ -809,7 +807,7 @@ void Animation_2(char f[], char s[], int &choice, Player p[], int index, int che
                         cout << "\t\t\t\t   The winner is bot " <<"!!!!!!!\n";
                     else 
                         cout << "\t\t\t\t   The winner is human " <<"!!!!!!!\n";
-                cout << " \t\t  Human wins: " << p[index].human << "\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
+                cout << " \t\t  Human wins: " << p[index].human << "\t\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
                 }
             }
         }
@@ -898,14 +896,34 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                     if(b[index].Row >= 3 && b[index].Col >= 3)
                         break;
                 }
-                cout << "Design icon of player 1: ";
-                cin >> p[index].Icon1;
-                cout << "Design icon of ";
-                if(bot == 1)
-                    cout << " player 2: ";
-                else 
-                    cout << " bot: ";
-                cin >> p[index].Icon2;
+                while(1)
+                {
+                    system("cls");
+                    cout << "Enter your row and col for your board (col and row MUST GREATER THAN 3): ";
+                    cout << b[index].Row << " " << b[index].Col << "\n";
+                    cout << "Icon must one character , must not a character '0' and two player has 2 different character \n";
+                    cout << "Design icon of player 1: ";
+                    cin >> p[index].Icon1;
+                    if(p[index].Icon1 != '0')
+                        break;
+                }
+
+                while(1)
+                {
+                    system("cls");
+                    cout << "Enter your row and col for your board (col and row MUST GREATER THAN 3): ";
+                    cout << b[index].Row << " " << b[index].Col << "\n";
+                    cout << "Icon must one character , must not a character '0' and two player has 2 different character \n";
+                    cout << "Design icon of player 1: " << p[index].Icon1 << "\n";
+                     cout << "Design icon of ";
+                    if(bot == 1)
+                        cout << "player 2: ";
+                    else 
+                        cout << "bot: ";
+                    cin >> p[index].Icon2;
+                    if(p[index].Icon2 != '0' && p[index].Icon2 != p[index].Icon1)
+                        break;
+                }
                 p[index].init(b[index]);
             }
 
@@ -944,6 +962,7 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                         if(check == 0)
                         {
                             MoveSuggestion(p, b, index, hintR, hintC);
+                            cout << "\n  this is player " << p[index].turn + 1<< " turn \n";
                             cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
                         }
                     }
@@ -1008,6 +1027,27 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                     strcpy(f, "Play Again");
                     strcpy(s, "Exit");
                     choose = 0;
+                    if(check == 2)
+                        cout <<  "\nDraw game\n";
+                    else 
+                    {
+                        if(bot == 1)
+                            cout << "\nThe winner is player " << p[index].turn <<"!!!!!!!\n";
+                        else 
+                        {
+                            if(p[index].turn == 0)
+                                cout << "\nThe winner is bot " <<"!!!!!!!\n";
+                            else    
+                                cout << "\nThe winner is human " <<"!!!!!!!\n";
+                        }
+                    }
+                    cout << "Press b to continue\n";
+                    while(1)
+                    {
+                        c = _getch();
+                        if(c == 'b')
+                            break;
+                    }
                   Animation_2(f, s, choose, p, index, check, bot);
                    if(choose == 0)
                         play_again = 1;
@@ -1055,6 +1095,5 @@ int main()
     SetWindowSize(50, 50);
     playGame(p, b, menu, row, col, qty, index, p_x, p_y, i, j, turn, c, dtb, out, bot);
     system("cls");
-    GoTo(p_x + 10, p_y + 10);
     return 0;
 }

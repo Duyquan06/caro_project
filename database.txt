@@ -1,6 +1,16 @@
-1
+3
 0
 Ekko;LOL
 0 0 0 X O 0
 2 0 0
-3 3 3
+5 3 3
+1
+Itadori;moimuatruyen
+0 0 0 F G 0
+0 0 0
+1 1 0
+2
+Hello;World
+0 0 0 X Y 0
+1 1 0
+0 0 0
