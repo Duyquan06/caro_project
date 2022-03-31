@@ -6,7 +6,7 @@
 #include<cstdlib>
 #include<time.h>
 
-#define MAX 100
+const int MAX = 100;
 
 using namespace std;
 
@@ -142,11 +142,8 @@ struct Menu
     cout << "                               |                                    |\n";
     cout << "                               |                                    |\n";
     cout << "                               -------------------------------------\n\n";
-        //cin.ignore();
-        //cin.getline(p[qty-1].Login, MAX);
         GoTo(45, 4);
         cin >> p[qty-1].Login;
-        //cin.getline(p[qty++].Pass, MAX);
         char c = 1; int i =0;
 
     cout << "\n\n\n\n                                        Enter your password        \n";
@@ -176,7 +173,6 @@ struct Menu
         {
             if(!strcmp(p[qty-1].Login, p[i].Login))
                 {
-                    //cout << "Account has existed \n";
                     return false;
                 }
         }
@@ -214,7 +210,7 @@ struct Menu
         dtb.close();
     }
 
-    bool sign_in(Player p[], Board b[], int &qty, int &index, ifstream &dtb)
+    bool sign_in(Player p[], int &qty, int &index)
     {   
         system("cls");
         char temp_login[MAX], temp_pass[MAX];
@@ -287,9 +283,12 @@ struct Menu
      }
 };
 
-void print_Board(Board b[], Player p[], int row, int col, int &index, int current_i, int current_j) // paly by new account
+void print_Board(Board b[], Player p[], int row, int col, int &index, int current_i, int current_j)
 {
-    cout << " [r]: Move replay      [Esc]: pause game \n";
+    SetColor(0, 14);
+    cout << "       [w]: ▲           [r]: Move replay      [Esc]: pause game \n";
+    cout << "◄ :[a] [s]: ▼ [d]: ► \n";
+    SetColor(0, 7);
     b[index].PrintHorizonLine();
     for(int i = 0; i < b[index].Row; i++)
     {
@@ -408,7 +407,7 @@ void MoveSuggestion(Player p[], Board b[], int index, int &hintR, int &hintC)
 
 }
 
-void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int &p_y, int oriX, int oriY, int &i, int &j, int &turn, char &c, int &latest_x1, int &latest_y1, int &latest_x2, int &latest_y2, int &hintR, int &hintC) // play by new account
+void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int &p_y, int oriX, int oriY, int &i, int &j, int &turn, char &c, int &latest_x1, int &latest_y1, int &latest_x2, int &latest_y2, int &hintR, int &hintC) 
 {
          c = '0';
          bool check_undo = true;
@@ -472,7 +471,9 @@ void process(Player p[], Board b[], int row, int col, int &index, int &p_x, int 
                         }
 
                     cout << "\n  this is player " << p[index].turn +1<< " turn \n";
+                    SetColor(0, 11);
                     cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+                    SetColor(0, 7);
         }
         
         if(c != 27)
@@ -583,13 +584,14 @@ bool Account(Player p[], Board b[], Menu &menu, int &qty, int &index, int row, i
         return true;
     }  else if(choice == 2) {
 
-        while(!(menu.sign_in(p, b, qty, index, dtb)))
+        while(!(menu.sign_in(p, qty, index)))
              {
                  cout << "Your account does not exist \n";
              }
              XoaManHinh();
              return true;
     }
+    return false;
 }
 
 
@@ -742,13 +744,17 @@ void Animation_2(char f[], char s[], int &choice, Player p[], int index, int che
         {
             if(bot == 1)
             {
+                SetColor(0, 12);
             cout << "\t\t\t\t   The winner is player " << p[index].turn <<"!!!!!!!\n";
+                SetColor(0, 7);
             cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
             } else {
+                 SetColor(0, 12);
                 if(p[index].turn == 0)
                     cout << "\t\t\t\t   The winner is bot " <<"!!!!!!!\n";
                 else 
                     cout << "\t\t\t\t   The winner is human " <<"!!!!!!!\n";
+                SetColor(0, 7);
                 cout << " \t\t  Human wins: " << p[index].human << "\t\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
             }
         }
@@ -790,7 +796,9 @@ void Animation_2(char f[], char s[], int &choice, Player p[], int index, int che
         {
             if(check == 2)
             {
+                 SetColor(0, 12);
                 cout << "\t\t\t\t   Draw game\n";
+                 SetColor(0, 7);
                 if(bot == 0)
                     cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
                 else 
@@ -800,13 +808,17 @@ void Animation_2(char f[], char s[], int &choice, Player p[], int index, int che
             {
                 if(bot == 1)
                 {
+                     SetColor(0, 12);
                 cout << "\t\t\t\t   The winner is player " << p[index].turn <<"!!!!!!!\n";
+                     SetColor(0, 7);
                 cout << " \t\t  Player 1 wins: " << p[index].win1 << "\t" << "Player 2 wins: " << p[index].win2 << "\t" << "Draw game: " << p[index].draw << "\n";
                 } else {
+                     SetColor(0, 12);
                     if(p[index].turn == 2)
                         cout << "\t\t\t\t   The winner is bot " <<"!!!!!!!\n";
                     else 
                         cout << "\t\t\t\t   The winner is human " <<"!!!!!!!\n";
+                     SetColor(0, 7);
                 cout << " \t\t  Human wins: " << p[index].human << "\t\t" << "Bot wins: " << p[index].bot << "\t" << "Draw game: " << p[index].drawPVE << "\n";
                 }
             }
@@ -938,7 +950,9 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
             if(check == 0)
             {
              MoveSuggestion(p, b, index, hintR, hintC);
+             SetColor(0, 11);
              cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+             SetColor(0, 7);
             }
              check = is_win(p, b, index, i, j, turn);
             while(check == 0 && choose == 0)
@@ -949,7 +963,9 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                     if(check == 0)
                     {
                         MoveSuggestion(p, b, index, hintR, hintC);
-                         cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+                        SetColor(0, 11);
+                        cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+                        SetColor(0, 7);
                     }
 
                     if(bot == 2 && c != 27 && check == 0)
@@ -963,7 +979,9 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                         {
                             MoveSuggestion(p, b, index, hintR, hintC);
                             cout << "\n  this is player " << p[index].turn + 1<< " turn \n";
+                            SetColor(0, 11);
                             cout << "Move suggestion: row " << hintR + 1 << " col " << hintC + 1 << "\n";
+                            SetColor(0, 7);
                         }
                     }
                     if(c == 27)
@@ -1083,6 +1101,7 @@ void playGame(Player p[], Board b[], Menu menu, int &row, int &col, int &qty, in
                 menu.Back_up(p, b, qty, bot);
         }
 }
+
 int main()
 {
     Player p[MAX];

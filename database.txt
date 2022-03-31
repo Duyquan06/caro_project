@@ -1,9 +1,9 @@
-3
+4
 0
 Ekko;LOL
 0 0 0 X O 0
-2 0 0
-5 3 3
+3 0 0
+6 3 3
 1
 Itadori;moimuatruyen
 0 0 0 F G 0
@@ -11,6 +11,11 @@ Itadori;moimuatruyen
 1 1 0
 2
 Hello;World
-0 0 0 X Y 0
-1 1 0
+0 0 0 X O 0
+3 2 0
+1 0 0
+3
+Yasuo;20gg
+0 0 0 X O 0
+0 1 0
 0 0 0
